@@ -79,6 +79,21 @@ class AlgoStrategy(gamelib.AlgoCore):
         """
         self.deploy_attackers(game_state)
 
+    def build_initial_defense(self, game_state):
+        firewall_locations = [[x, 12] for x in range(2, 26)]
+        for location in firewall_locations:
+            if game_state.can_spawn(FILTER, location):
+                game_state.attempt_spawn(FILTER, location)
+
+    def fortify_defenses(self, game_state):
+        firewall_locations = [[x, 11] for x in range(2, 26, 3)]
+        for location in firewall_locations:
+            if game_state.can_spawn(DESTRUCTOR, location):
+                game_state.attempt_spawn(DESTRUCTOR, location)
+
+    def attack(self, game_state):
+
+
     # Here we make the C1 Logo!
     def build_c1_logo(self, game_state):
         """
