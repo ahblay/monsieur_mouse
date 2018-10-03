@@ -62,37 +62,38 @@ class AlgoStrategy(gamelib.AlgoCore):
     strategy and can safey be replaced for your custom algo.
     """
     def starter_strategy(self, game_state):
-        """
-        Build the C1 logo. Calling this method first prioritises
-        resources to build and repair the logo before spending them 
-        on anything else.
-        """
-        self.build_c1_logo(game_state)
 
-        """
-        Then build additional defenses.
-        """
-        self.build_defences(game_state)
+        self.build_initial_defense(game_state)
 
-        """
-        Finally deploy our information units to attack.
-        """
-        self.deploy_attackers(game_state)
+        self.fortify_channel(game_state)
+
+        self.fortify_defenses(game_state)
+
+        self.attack(game_state)
 
     def build_initial_defense(self, game_state):
-        firewall_locations = [[x, 12] for x in range(2, 26)]
+        firewall_locations = [[x, 13] for x in range(3, 27)]
+        firewall_locations += [[0, 13], [1, 13]]
         for location in firewall_locations:
             if game_state.can_spawn(FILTER, location):
                 game_state.attempt_spawn(FILTER, location)
 
+    def fortify_channel(self, game_state):
+        firewall_locations = [[1, 12], [2, 11], [3, 10]]
+        for location in firewall_locations:
+            if game_state.can_spawn(DESTRUCTOR, location):
+                game_state.attempt_spawn(DESTRUCTOR, location)
+
     def fortify_defenses(self, game_state):
-        firewall_locations = [[x, 11] for x in range(2, 26, 3)]
+        firewall_locations = [[x, 12] for x in range(4, 26, 3)]
         for location in firewall_locations:
             if game_state.can_spawn(DESTRUCTOR, location):
                 game_state.attempt_spawn(DESTRUCTOR, location)
 
     def attack(self, game_state):
-
+        attack_currency = math.floor(game_state.get_resource(game_state.BITS))
+        if game_state.can_spawn(PING, [4, 9], attack_currency):
+                game_state.attempt_spawn(PING, [4, 9], attack_currency)
 
     # Here we make the C1 Logo!
     def build_c1_logo(self, game_state):
