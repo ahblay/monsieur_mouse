@@ -49,14 +49,11 @@ class AlgoStrategy(gamelib.AlgoCore):
         unit deployments, and transmitting your intended deployments to the
         game engine.
         """
-        game_state = gamelib.GameState(self.config, turn_state)
-        advanced_game_state = gamelib.AdvancedGameState(game_state)
+        game_state = gamelib.AdvancedGameState(self.config, turn_state)
         gamelib.debug_write('Performing turn {} of your custom algorithm strategy'.format(game_state.turn_number))
         #game_state.suppress_warnings(True)  #Uncomment this line to suppress warnings.
 
-        self.starter_strategy(game_state, advanced_game_state)
-        gamelib.debug_write(self.get_attacked_locations(advanced_game_state))
-        gamelib.debug_write("TESTINGTESTINGTESTING")
+        self.starter_strategy(game_state)
 
         game_state.submit_turn()
 
@@ -75,6 +72,9 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.add_defenses(game_state)
 
         self.attack(game_state)
+
+        gamelib.debug_write(self.get_attacked_locations(game_state))
+        gamelib.debug_write("TESTINGTESTINGTESTING")
 
     def build_initial_defense(self, game_state):
         firewall_locations = [[x, 13] for x in range(3, 27)]
@@ -113,8 +113,9 @@ class AlgoStrategy(gamelib.AlgoCore):
         if game_state.can_spawn(PING, [4, 9], attack_currency):
                 game_state.attempt_spawn(PING, [4, 9], attack_currency)
 
-    def get_attacked_locations(self, advanced_game_state):
-        attackers = advanced_game_state.get_attackers([5, 13], 0)
+    def get_attacked_locations(self, game_state):
+        attackers = game_state.get_attackers([5, 13], 0)
+        return attackers
 
 if __name__ == "__main__":
     algo = AlgoStrategy()
