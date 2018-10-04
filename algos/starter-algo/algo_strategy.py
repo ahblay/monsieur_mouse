@@ -81,9 +81,6 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         self.attack(game_state, side)
 
-        gamelib.debug_write(self.get_attacked_locations(game_state))
-        gamelib.debug_write("TESTINGTESTINGTESTING")
-
     def build_initial_defense(self, game_state):
         firewall_locations = [[x, 13] for x in range(4, 24)]
         firewall_locations += [[0, 13], [1, 13], [26, 13], [27, 13]]
@@ -133,9 +130,8 @@ class AlgoStrategy(gamelib.AlgoCore):
             location = [4, 9]
         else:
             location = [4, 9]
-        half_currency = math.floor(game_state.get_resource(game_state.BITS) / 2)
-        if game_state.can_spawn(PING, location, half_currency):
-                game_state.attempt_spawn(PING, location, half_currency)
+        half_currency = math.floor(game_state.get_resource(game_state.BITS))
+        gamelib.debug_write(half_currency)
         if game_state.can_spawn(SCRAMBLER, location, half_currency):
                 game_state.attempt_spawn(SCRAMBLER, location, half_currency)
 
