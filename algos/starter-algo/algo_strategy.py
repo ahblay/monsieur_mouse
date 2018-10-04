@@ -133,9 +133,11 @@ class AlgoStrategy(gamelib.AlgoCore):
             location = [4, 9]
         else:
             location = [4, 9]
-        attack_currency = math.floor(game_state.get_resource(game_state.BITS))
-        if game_state.can_spawn(PING, location, attack_currency):
-                game_state.attempt_spawn(PING, location, attack_currency)
+        half_currency = math.floor(game_state.get_resource(game_state.BITS) / 2)
+        if game_state.can_spawn(PING, location, half_currency):
+                game_state.attempt_spawn(PING, location, half_currency)
+        if game_state.can_spawn(SCRAMBLER, location, half_currency):
+                game_state.attempt_spawn(SCRAMBLER, location, half_currency)
 
     def get_attacked_locations(self, game_state):
         one_l = game_state.get_attackers([0, 13], 0)
