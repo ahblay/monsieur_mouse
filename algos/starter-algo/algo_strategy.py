@@ -65,30 +65,48 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         self.build_initial_defense(game_state)
 
-        self.fortify_channel(game_state)
+        side = self.get_attacked_locations(game_state)
+
+        if side == "left":
+            self.fortify_channel_left(game_state)
+        elif side == "right":
+            self.fortify_channel_right(game_state)
+        else:
+            self.fortify_channel_left(game_state)
+            self.fortify_channel_right(game_state)
 
         self.fortify_defenses(game_state)
 
         self.add_defenses(game_state)
 
-        self.attack(game_state)
+        self.attack(game_state, side)
 
         gamelib.debug_write(self.get_attacked_locations(game_state))
         gamelib.debug_write("TESTINGTESTINGTESTING")
 
     def build_initial_defense(self, game_state):
-        firewall_locations = [[x, 13] for x in range(3, 27)]
-        firewall_locations += [[0, 13], [1, 13]]
+        firewall_locations = [[x, 13] for x in range(4, 24)]
+        firewall_locations += [[0, 13], [1, 13], [26, 13], [27, 13]]
         for location in firewall_locations:
             if game_state.can_spawn(FILTER, location):
                 game_state.attempt_spawn(FILTER, location)
 
-    def fortify_channel(self, game_state):
-        firewall_locations = [[1, 12], [2, 11], [3, 10]]
+    def fortify_channel_left(self, game_state):
+        firewall_locations = [[2, 12], [3, 11], [4, 10]]
         for location in firewall_locations:
             if game_state.can_spawn(DESTRUCTOR, location):
                 game_state.attempt_spawn(DESTRUCTOR, location)
-        encryptor_locations = [[5, 8], [6, 8]]
+        encryptor_locations = [[1, 12], [2, 11], [3, 10]]
+        for location in encryptor_locations:
+            if game_state.can_spawn(ENCRYPTOR, location):
+                game_state.attempt_spawn(ENCRYPTOR, location)
+
+    def fortify_channel_right(self, game_state):
+        firewall_locations = [[25, 12], [24, 11], [23, 10]]
+        for location in firewall_locations:
+            if game_state.can_spawn(DESTRUCTOR, location):
+                game_state.attempt_spawn(DESTRUCTOR, location)
+        encryptor_locations = [[26, 12], [25, 11], [24, 10]]
         for location in encryptor_locations:
             if game_state.can_spawn(ENCRYPTOR, location):
                 game_state.attempt_spawn(ENCRYPTOR, location)
@@ -108,14 +126,35 @@ class AlgoStrategy(gamelib.AlgoCore):
             if game_state.can_spawn(FILTER, location):
                 game_state.attempt_spawn(FILTER, location)
 
-    def attack(self, game_state):
+    def attack(self, game_state, side):
+        if side == "left":
+            location = [23, 9]
+        elif side == "right":
+            location = [4, 9]
+        else:
+            location = [4, 9]
         attack_currency = math.floor(game_state.get_resource(game_state.BITS))
-        if game_state.can_spawn(PING, [4, 9], attack_currency):
-                game_state.attempt_spawn(PING, [4, 9], attack_currency)
+        if game_state.can_spawn(PING, location, attack_currency):
+                game_state.attempt_spawn(PING, location, attack_currency)
 
     def get_attacked_locations(self, game_state):
-        attackers = game_state.get_attackers([5, 13], 0)
-        return attackers
+        one_l = game_state.get_attackers([0, 13], 0)
+        two_l = game_state.get_attackers([1, 13], 0)
+        three_l = game_state.get_attackers([2, 13], 0)
+        four_l = game_state.get_attackers([3, 13], 0)
+        left = len(one_l) + len(two_l) + len(three_l) + len(four_l)
+
+        one_r = game_state.get_attackers([27, 13], 0)
+        two_r = game_state.get_attackers([26, 13], 0)
+        three_r = game_state.get_attackers([25, 13], 0)
+        four_r = game_state.get_attackers([24, 13], 0)
+        right = len(one_r) + len(two_r) + len(three_r) + len(four_r)
+        if left > right:
+            return "left"
+        elif right > left:
+            return "right"
+        else:
+            return "equal"
 
 if __name__ == "__main__":
     algo = AlgoStrategy()
